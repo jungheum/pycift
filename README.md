@@ -1,4 +1,4 @@
-# [Under Construction]
+# [Under Construction - expected until Mar 18]
 
 # pycift
 
@@ -62,15 +62,11 @@ Set user-inputs:
     # ...(skip)...
 
     # Corpus creators can utilize add_input() to set each input as follows:
-    cift.add_input(CIFTOperation.COMPANION_APP_ANDROID, path)
-    cift.add_input(CIFTOperation.COMPANION_APP_IOS, path)
-    cift.add_input(CIFTOperation.CLOUD, idpw.get("id"), idpw.get("pw"), idpw.get("commsId"))
-    cift.add_input(CIFTOperation.CLOUD, cookie)
+    # ...(skip)...
 
-Run `pycift` modules and then close the current interface:
+Run `pycift` modules:
 
     cift.run()
-    cift.close()
 
 #### Results
 
@@ -82,4 +78,3 @@ The results were created on the log directory (\example\\(2018-XX-XX_YY.YY.YY)_C
 ## License
 
 Apache License 2.0
-
