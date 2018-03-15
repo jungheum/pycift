@@ -1,4 +1,4 @@
-# [Under Construction - expected until Mar 18]
+# [Under Construction - expected until Mar 18, 2018]
 
 # pycift
 
