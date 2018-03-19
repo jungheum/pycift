@@ -26,9 +26,21 @@ Install the latest version:
 
 pycift_input_example_1.json
 
-    JSON
-    cift_amazon_alexa.client.android_app
-
+```
+#!json
+{
+  {
+  "cift_amazon_alexa": {
+    "enabled": true,
+    "client": {
+      "android_app": [
+        "D:/artifacts/android/dfrws_challenge_2018/002-BettyNote2Black/com.amazon.dee.app/",
+        "D:/artifacts/android/dfrws_challenge_2018/003-SimonNote2White/com.amazon.dee.app/"
+      ]
+    }
+  }
+}
+```
 
 #### Code snippets of (\example\pycift_simple_example.py)
 
