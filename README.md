@@ -103,7 +103,7 @@ cift.run()
 The results were created on an output directory ([CIFT_RESULT](https://bitbucket.org/cift/pycift/src/master/example/(EXAMPLE-1)_CIFT_RESULT_DC2018/))
 
 + cift_amazon_alexa.db [257 KB]
-    * cf. [Alexa DB schema](\pycift\report\db_models_amazon_alexa.py) 
+    * cf. [Alexa DB schema](https://bitbucket.org/cift/pycift/src/master/pycift/report/db_models_amazon_alexa.py) 
 + Evidence_Library:
     * AmazonAlexaClient [0.99 MB]
         1. 342 JSON files
