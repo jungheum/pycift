@@ -1,8 +1,0 @@
-selenium
-python-dateutil
-requests
-construct
-peewee
-iso8601
-pypiwin32
-
