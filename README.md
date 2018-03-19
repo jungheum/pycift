@@ -3,7 +3,7 @@ pycift
 
 > A Python implementation of **CIFT** (Cloud-based IoT Forensic Toolkit)
 > 
-> See [Description and version history](\pycift\__init__.py)
+> See [Description and version history](https://bitbucket.org/cift/pycift/src/master/pycift/__init__.py?fileviewer=file-view-default)
 >
 > CIFT wiki is under construction for providing more information
 
