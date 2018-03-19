@@ -34,9 +34,12 @@ pycift_input_example_1.json
 
 Import `pycift` modules:
 
-    from pycift.common_defines import *
-    from pycift.acquisition.amazon_alexa import AmazonAlexaInterface
-    from pycift.acquisition.google_assistant import GoogleAssistantInterface
+```
+#!python
+from pycift.common_defines import *
+from pycift.acquisition.amazon_alexa import AmazonAlexaInterface
+from pycift.acquisition.google_assistant import GoogleAssistantInterface 		
+```
 
 Load user-inputs:
 
