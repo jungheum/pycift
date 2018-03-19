@@ -1,0 +1,393 @@
+"""
+============
+Table schema
+============
+    ------------------------------------------------------------------------------------
+    - OPERATION
+        *no | type
+        ------------------------------
+        0  | HARDWARE
+        1  | HARDWARE_FILES
+        2  | HARDWARE_RAM
+        3  | CLOUD
+        4  | COMPANION
+        5  | COMPANION_APP_ANDROID
+        6  | COMPANION_APP_IOS
+        7  | COMPANION_BROWSER_CHROME
+        8  | COMPANION_RAM
+
+    ------------------------------------------------------------------------------------
+    - ACQUIRED_FILE
+        *no | $operation | src_path | desc | saved_path | sha1 | saved_timestamp | modified_timestamp | timezone
+         0  | CLOUD | https://~ | Activities | d:\1.json | 1234***4321 | 2016-12-13 00:00:00 | -
+         1  | CLOUD | https://~ | Cards      | d:\2.json | 2345***5432 | 2016-12-13 00:00:05 | -
+         2  | CLOUD | https://~ | Voice      | d:\3.wav  | abcd***efgh | 2017-06-28 21:00:07 | 2017-05-23 00:00:00 | -
+         3  | CLOUD | https://~ | Voice      | d:\4.mp3  | abcd***efgh | 2017-06-28 21:00:07 | 2017-05-23 00:00:00 | -
+        ...
+
+    ------------------------------------------------------------------------------------
+    - CREDENTIAL (Cookies + External auth list)
+        ANDROID_COOKIES (SQLite DB) - "Cookies" table
+            All values (including at-main, sess-at-main, ubid-main, session-id)
+
+        IOS_COOKIES (Binarycookies)
+            All values
+
+        type | domain | values | $source_id
+        Android Cookie | .amazon.* | values | s_id
+        iOS Cookie     | .amazon.* | values | s_id
+
+    ------------------------------------------------------------------------------------
+    - ACCOUNT (BOOTSTRAP + HOUSEHOLD + COMMS_ACCOUNTS)
+        https://pitangui.amazon.com/api/bootstrap
+            authentication.customerEmail
+            authentication.customerName
+            authentication.customerId
+            authentication.authenticated: true or false
+
+        https://pitangui.amazon.com/api/household
+            accounts[0].email
+            accounts[0].fullName
+            accounts[0].id
+
+        https://alexa-comms-mobile-service.amazon.com/accounts
+            commsId
+            phoneCountryCode
+            phoneNumber
+            firstName
+            lastName
+
+        customer_email | customer_name | phone_number | customer_id | comms_id | authenticated | $source_id
+
+    ------------------------------------------------------------------------------------
+    - CONTACT (COMMS_CONTACTS)
+        https://alexa-comms-mobile-service.amazon.com/users/{commsId}/contacts?view=full
+            [0].name.firstName
+            [0].name.lastName
+            [0].number
+                ~[0].numbers.number
+                ~[0].numbers.type: Mobile, Custom...
+            [0].emails
+            [0].id
+            [0].isHomeGroup: true (if this entry HomeGroup) is or false
+            [0].commsId
+
+        first_name | last_name | number | email | is_home_group | contact_id | comms_id | $source_id
+
+    ------------------------------------------------------------------------------------
+    - WIFI_SETTING
+        https://pitangui.amazon.com/api/wifi/configs
+            values[0].deviceSerialNumber
+            values[0].deviceType
+            values[0].ssid
+            values[0].securityMethod
+            values[0].preSharedKey
+
+        ssid | security_method | pre_shared_key | $source_id
+
+    ------------------------------------------------------------------------------------
+    - MISC_SETTING
+        https://pitangui.amazon.com/api/traffic/settings
+            origin.label
+            destination.label
+            waypoints[0].label
+            ...
+
+        https://pitangui.amazon.com/api/eon/householdaccounts
+            householdAccountList[0].customerId
+            householdAccountList[0].customerName
+            householdAccountList[0].getCalendarAccountsResponse
+
+        https://pitangui.amazon.com/api/wake-word
+            wakeWords[0].wakeWord
+            wakeWords[0].deviceSerialNumber
+
+        https://pitangui.amazon.com/api/bluetooth
+            bluetoothStates[0].pairedDeviceList[0].friendlyName
+            bluetoothStates[0].pairedDeviceList[0].connected
+            bluetoothStates[0].pairedDeviceList[0].address
+            bluetoothStates[0].pairedDeviceList[0].profiles
+            bluetoothStates[0].deviceSerialNumber
+
+        https://pitangui.amazon.com/api/third-party
+            services[0].serviceName
+
+        name | value | device_serial_number | $source_id
+        traffic_origin_address | origin.label |
+        traffic_waypoint | waypoints[0].label |
+        traffic_destination_address | destination.label |
+        calendar_account | householdAccountList[0].getCalendarAccountsResponse |
+        wake_word | wakeWords[0].wakeWord | wakeWords[0].deviceSerialNumber
+        paired_bluetooth_device | bluetoothStates[0].pairedDeviceList | bluetoothStates[0].deviceSerialNumber
+        third_party_service | services[0].serviceName
+        ...
+
+    ------------------------------------------------------------------------------------
+    - ALEXA_DEVICE (Devices + Device Preferences) -> Echo, fire TV...
+        https://pitangui.amazon.com/api/devices/device
+            devices[0].accountName
+            devices[0].deviceAccountId
+            devices[0].deviceFamily
+            devices[0].deviceOwnerCustomerId
+            devices[0].serialNumber
+            devices[0].deviceType
+            devices[0].softwareVersion
+            devices[0].macAddress
+
+        https://pitangui.amazon.com/api/device-preferences
+            devicePreferences[0].deviceAccountId
+            devicePreferences[0].deviceAddress
+            devicePreferences[0].deviceSerialNumber
+            devicePreferences[0].deviceType
+            devicePreferences[0].locale
+            devicePreferences[0].postalCode
+            devicePreferences[0].searchCustomerId
+            devicePreferences[0].timeZoneId
+            devicePreferences[0].timeZoneRegion
+
+        device_account_name | device_account_id | customer_id | device_serial_number | device_type |
+        sw_version | mac_address | address | postal_code | locale | search_customer_id |
+        timezone | region | $source_id
+
+    ------------------------------------------------------------------------------------
+    - COMPATIBLE_DEVICE (Phoenix) -> Hue Lamps, Bright, Wemo...
+        https://pitangui.amazon.com/api/phoenix
+            networkDetail: *json-data*
+                locationDetails.locationDetails.Default_Location.amazonBridgeDetails.amazonBridgeDetails
+                .{device_type}_{device_serial_number}.amazonBridgeIdentifier
+                    amazonBridgeDSN: device_serial_number
+                    amazonBridgeType: device_type
+
+                locationDetails.locationDetails.Default_Location.amazonBridgeDetails.amazonBridgeDetails
+                .{device_type}_{device_serial_number}.applianceDetails.applianceDetails
+                .uuid:{UUID}
+                    applianceNetworkState.createdAt: Created (B)
+                    applianceNetworkState.lastSeenAt: Last Seen (M)
+                    friendlyNameModifiedAt: Name Modified (C)
+                    friendlyName: short
+                    friendlyDescription: desc
+                    modelName
+                    firmwareVersion
+                    reachable: notes
+                    applianceId: extra
+
+                    friendlyName
+                    manufacturerName
+                    modelName
+                    applianceNetworkState.createdAt: Created (B)
+                    applianceNetworkState.lastSeenAt: Last Seen (M)
+                    friendlyNameModifiedAt: Name Modified (C)
+                    friendlyDescription
+                    deviceType
+                    reachable
+                    firmwareVersion
+                    applianceId
+
+        name | manufacture | model | created | last_seen | name_modified |
+        desc | type | reachable | firmware_version | appliance_id |
+        alexa_device_serial_number | alexa_device_type | $source_id
+
+    ------------------------------------------------------------------------------------
+    - SKILL
+
+        https://skills-store.amazon.com/app/secure/yourskills
+            if 'block' is 'data'
+                if contents[n].id == 'skillsPageData'
+                    contents[n].contents[0].title
+                    contents[n].contents[0].developerInfo.name
+                    contents[n].contents[0].entitlementInfo.accountLinked = True or False
+                    contents[n].contents[0].productDetails.releaseDate
+                    contents[n].contents[0].shortDescription
+                    contents[n].contents[0].productDetails.description
+                    contents[n].contents[0].productDetails.vendorId
+                    contents[n].contents[0].productMetadata.skillId
+
+        title | developer_name | account_linked | release_date | short |
+        desc | vendor_id | skill_id | $source_id
+
+    ------------------------------------------------------------------------------------
+    - TIMELINE (Activities + Cards + Media + Task list + Shopping list + Notifications + Phoenix + Named list + Conversation)
+
+        https://pitangui.amazon.com/api/cards?beforeCreationTime={}
+            cards[0].creationTimestamp
+            cards[0].cardType: TextCard, StandardCard, WeatherCard, ToDoCard, NotificationCard, ProductInfoCard, MultiProductInfoCard, CloudPlayerCard, EonCard
+            cards[0].registeredCustomerId
+            cards[0].title
+            cards[0].subtitle
+            cards[0].playbackAudioAction.actionType: PlayAudioAction
+            cards[0].playbackAudioAction.mainText: "Alexa heard: \" \""
+            cards[0].playbackAudioAction.url: User's voice
+            cards[0].descriptiveText: Alexa's answer
+            cards[0].sourceDevice.serialNumber
+            cards[0].sourceDevice.type
+            cards[0].eonEventList[0][1]...
+            *cards[0].primaryActions[0].actionType: OpenUrlAction, NavigateAction, AddToCartAction, AddToShoppingListAction, ViewProductDetailAction
+            *cards[0].primaryActions[0].mainText
+            *cards[0].primaryActions[0].url: Related URL
+
+        https://pitangui.amazon.com/api/todos?type=TASK&size=1000
+        https://pitangui.amazon.com/api/todos?type=SHOPPING_ITEM&size=1000
+            values[0].createdDate
+            values[0].lastUpdatedDate
+            values[0].lastLocalUpdatedDate
+            values[0].type: TASK or SHOPPING_ITEM
+            values[0].customerId
+            values[0].text: User's command
+            values[0].originalAudioId: User's voice
+            values[0].complete: true or false
+            values[0].deleted: true or false
+
+        https://pitangui.amazon.com/api/media/historical-queue?deviceSerialNumber={}&deviceType=A3S5BH2HU6VAYF&size=1000&offset=-1
+        https://pitangui.amazon.com/api/media/historical-queue?deviceSerialNumber={}&deviceType=A3S5BH2HU6VAYF&size=1000&offset=-1
+        https://pitangui.amazon.com/api/media/historical-queue?deviceSerialNumber={}&deviceType=A2LWARUGJLBYEW&size=1000&offset=-1
+            @deviceSerialNumber
+            @deviceType
+            media[0].startTime
+            media[0].title
+            media[0].contentType: LIVE_STATION, TRACKS, CUSTOM_STATION, PODCASTS
+            media[0].providerId (= media[0].service?)
+            media[0].historicalId (including media[0].queueId)
+            sessions[0].startTime
+            sessions[0].title
+            sessions[0].contentType
+            sessions[0].providerId (= sessions[0].service?)
+            sessions[0].queueId
+
+        https://pitangui.amazon.com/api/notifications
+            notifications[0].createdDate
+            notifications[0].type: Alarm,
+            notifications[0].alarmTime: O AM or O PM
+            notifications[0].status: ON or OFF
+            notifications[0].deviceSerialNumber
+            notifications[0].deviceType
+
+        https://pitangui.amazon.com/api/activities?startTime={}&size=1000&offset=-1
+            activities[0].creationTimestamp
+            activities[0].registeredCustomerId
+            activities[0].description.summary: Text from user's voice
+            activities[0].utteranceId: User's voice (https://pitangui.amazon.com/api/utterance/audio/data?id={})
+            activities[0].activityStatus: SUCCESS, DISCARDED_NON_DEVICE_DIRECTED_INTENT, SYSTEM_ABANDONED, INVALID, FAULT
+            activities[0].sourceDeviceIds[0].serialNumber
+            activities[0].sourceDeviceIds[0].deviceType
+
+        https://alexa.amazon.com/api/namedLists
+            lists[0].createdDate
+            lists[0].customerId
+            lists[0].itemId
+            lists[0].type: TO_DO or SHOPPING_LIST
+            lists[0].name
+            lists[0].updatedDate
+
+        https://alexa.amazon.com/api/namedLists/{}/items
+            list[0].completed: true or false
+            list[0].createdDateTime
+            list[0].customerId
+            list[0].value
+            list[0].updatedDateTime
+
+        https://alexa.amazon.com/api/activity-dialog-items?activityKey={}
+            activityDialogItems[0].itemType: ASR, NLU, TTS
+            activityDialogItems[0].timestamp
+            activityDialogItems[0].activityItemData.asrText
+            activityDialogItems[0].activityStatus
+            activityDialogItems[0].registeredUserId
+            activityDialogItems[0].sourceDevice.deviceSerialNumber
+            activityDialogItems[0].utteranceId
+
+        https://alexa-comms-mobile-service.amazon.com/users/{}/conversations
+            conversations[0].lastModified: string timestamp
+            conversations[0].conversationId: conversationId
+            conversations[0].participants: [ list of participants’ commsId ]
+            conversations[0].lastMessageId: integer value
+            conversations[0].lastSequenceId: integer value,
+            conversations[0].lastMessage: { a message entry }
+
+        https://alexa-comms-mobile-service.amazon.com/users/{}/conversations/{}/messages?sort=asc&startId=1
+            messages[0].conversationId: conversationId
+            messages[0].messageId: integer value
+            messages[0].sequenceId: integer value
+            messages[0].time: string timestamp
+            messages[0].sender: commsId
+            messages[0].type: message type (audio or text)
+            messages[0].payload.mediaId: mediaId,
+            messages[0].payload.transcript: "This is a test message"
+            messages[0].payload.text: "This is a test message"
+
+        ANDROID_DATASTORE (SQLite DB) - "DataItem" table
+            key = ToDoCollection.TASK          == https://pitangui.amazon.com/api/todos?type=TASK&size=1000
+            key = ToDoCollection.SHOPPING_ITEM == https://pitangui.amazon.com/api/todos?type=SHOPPING_ITEM&size=1000
+
+        ANDROID_DATASTORE (SQLite DB) - "DataItem" table
+            key = NamedListsCollection            == https://alexa.amazon.com/api/namedLists
+            key = NamedListItemsCollection.itemId == https://alexa.amazon.com/api/namedLists/{}/items
+
+        IOS_LOCALDATA (SQLite DB) - "ZDATAITEM" table
+            ZKEY = ToDoCollection.TASK          == https://pitangui.amazon.com/api/todos?type=TASK&size=1000
+            ZKEY = ToDoCollection.SHOPPING_ITEM == https://pitangui.amazon.com/api/todos?type=SHOPPING_ITEM&size=1000
+
+        IOS_LOCALDATA (SQLite DB) - "ZDATAITEM" table
+            ZKEY = NamedListsCollection            == https://alexa.amazon.com/api/namedLists
+            ZKEY = NamedListItemsCollection.itemId == https://alexa.amazon.com/api/namedLists/{}/items
+
+        ANDROID_MAP_DATA_STORAGE (SQLite DB) - "accounts" table
+            account_timestamp
+            directed_id
+            display_name
+            account_deleted
+            account_dirty
+
+        ANDROID_MAP_DATA_STORAGE (SQLite DB) - "device_data" table
+            device_data_timestamp
+            device_data_namespace
+            device_data_key
+            device_data_value
+            device_data_deleted
+            device_data_dirty
+
+        ANDROID_MAP_DATA_STORAGE (SQLite DB) - "tokens" table
+            token_timestamp
+            token_account_id
+            token_key
+            token_value
+            token_deleted
+            token_dirty
+
+        ANDROID_MAP_DATA_STORAGE (SQLite DB) - "userdata" table
+            userdata_timestamp
+            userdata_account_id
+            userdata_key
+            userdata_value
+            userdata_deleted
+            userdata_dirty
+
+        IOS_COMMS (SQLite DB) - "ZMESSAGEENTITY" table
+            ZMESSAGETIME: timestamp (string)
+            ZMESSAGEBODY
+            ZMESSAGETYPE: message/audio or message/text
+            ZLOCALURL: local file name
+            ZMEDIAURL
+            ZCONVERSATIONID
+            ZCREATETIME: timestamp (integer unix)
+
+        date | time | timezone | MACB | source | sourcetype | type | user | host |
+        short | desc | version | filename | inode | notes | format | extra
+
+            (http://forensicswiki.org/wiki/L2T_CSV)
+            .date
+            .time
+            .timezone
+            .MACB: Modified, Accessed, Changed (Entry Modified) and Birth (Created)
+            .source: from ACQUIRED_DATA.type
+            .sourcetype: from ACQUIRED_DATA.desc
+            .type: 'created' (B) or 'last updated' (M) or 'last local update' (C) or 'web-page accessed'
+            .user: customer_id
+            .host: device_serial_number
+            .short
+            .desc
+            .version: 2
+            .filename: source_id
+            .inode: -
+            .notes: playback_audio_text
+            .format: JSON, Chromium Simple Cache + JSON, XML, SQLite
+            .extra: playback_audio_url
+"""

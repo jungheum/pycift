@@ -1,0 +1,66 @@
+{
+
+  "cift_amazon_alexa": {
+    "enabled": true,
+    "cloud": {
+      "credential_idpw": [
+        {
+          "id": "amazonID",
+          "pw": "amazonPW"
+        }
+      ],
+      "credential_cookie": [
+        {
+          "at-main": "Atz.......Uob",
+          "sess-at-main": "gO.......U=",
+          "session-id": "1**-*******-*****32",
+          "ubid-main": "1**-*******-*****52",
+          "x-main": "x3.......GO"
+        }
+      ]
+    },
+    "client": {
+      "android_app": [
+        "Target path 1",
+        "Target path 2"
+      ],
+      "ios_app": [
+        "Target path 3",
+        "Target path 4"
+      ],
+      "chromium_main-disk-cache": [
+        "Target path 5"
+      ]
+    }
+  },
+
+  "cift_google_assistant": {
+    "enabled": true,
+    "cloud": {
+      "credential_idpw": [
+        {
+          "id": "googleID",
+          "pw": "googlePW"
+        }
+      ],
+      "credential_cookie": [
+        {
+          "SID": "5Q.......g.",
+          "HSID": "A6...Ta",
+          "SSID": "AT...xo"
+        }
+      ]
+    },
+    "client": {
+      "android_app": [
+        "Target path 1",
+        "Target path 2"
+      ],
+      "ios_app": [
+        "Target path 3",
+        "Target path 4"
+      ]
+    }
+  }
+
+}

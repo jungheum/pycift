@@ -1,0 +1,108 @@
+"""
+============
+Table schema
+============
+    ------------------------------------------------------------------------------------
+    - OPERATION
+        *no | type
+        ------------------------------
+        0  | HARDWARE
+        1  | HARDWARE_FILES
+        2  | HARDWARE_RAM
+        3  | CLOUD
+        4  | COMPANION
+        5  | COMPANION_APP_ANDROID
+        6  | COMPANION_APP_IOS
+        7  | COMPANION_BROWSER_CHROME
+        8  | COMPANION_RAM
+
+    ------------------------------------------------------------------------------------
+    - ACQUIRED_FILE
+        *no | $operation_id | src_path | desc | saved_path | sha1 | saved_timestamp | modified_timestamp | timezone
+        0  | CLOUD | https://~ | MyActivity | d:\1.jspb | 1234***4321 | 2016-12-13 00:00:00 | -
+        1  | CLOUD | https://~ | MyActivity | d:\2.jspb | 2345***5432 | 2016-12-13 00:00:05 | -
+        3  | CLOUD | https://~ | Voice      | d:\3.mp3  | abcd***efgh | 2017-06-28 21:00:07 | -
+        3  | CLOUD | https://~ | Voice      | d:\4.mp3  | abcd***efgh | 2017-06-28 21:00:07 | -
+        ...
+
+    ------------------------------------------------------------------------------------
+    - CREDENTIAL (Cookies)
+        ANDROID_COOKIES (SQLite DB) - "Cookies" table
+            All values (including at-main, sess-at-main, ubid-main, session-id)
+
+        IOS_COOKIES (Binarycookies)
+            All values
+
+        type | domain | value | $source_id
+        Android Cookie | .amazon.com | set of cookie entries |
+        iOS Cookie     | .amazon.com | set of cookie entries |
+        iOS Cookie     | .google.com | set of cookie entries |
+
+    ------------------------------------------------------------------------------------
+    - TIMELINE (MyActivity)
+
+        https://myactivity.google.com/item?restrict=assist&jspb=1
+        https://myactivity.google.com/item?restrict=assist&jspb=1&ct={} --> for getting the next page
+
+            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+            [ 0]    Unknown, usually null
+            [ 1]    Unknown, usually null
+            [ 2]    list => if 2, a full record has 26 items
+            [ 3]    unknown, list, always [31]?
+            [ 4]    string, timestamp (ex: "1496631403214273")
+            [ 5]    unknown, string, unique id? (ex: "AODP23YAAAAfGh0InQMSEwjB65e52qXUAhVCGj4KHTQcCSAYy5HyHvl4e1hbVYMzdObeAV0wswl1SZ-l")
+            [ 6]    unknown, string, unique id? (ex: "AODP23YAAAATChEInQMQy5HyHhjB65e52qXUApksBe40aUxdu7FDjTTDd9yZT81P")
+            [ 7]    list, triggered by "URI" (ex: ["com.google.android.apps.chirp/pineapple/prod", ...])
+            [ 8]    Unknown, usually null
+            [ 9]    list, transcript (ex: ["find my phone", true, "Said", ...] or ['Transcript not available'])
+            [10]    Unknown, usually null
+            [11]    Unknown, usually null
+            [12]    Unknown, usually null
+            [13]    list of list (or null), answer of GA (ex: [["com.google.homeautomation",""],["It looks like 2 lights aren't available right now."]])
+            [14]    Unknown, usually null
+            [15]    Unknown, usually null
+            [16]    Unknown, usually null
+            [17]    Unknown, usually null
+            [18]    list, triggered by "URI" (ex: ["com.google.android.apps.chirp/pineapple/prod"])
+            [19]    list of list (or null), triggered by "product name" (ex: [["Google Home"]])
+            [20]    list of list (or null), location info. ["From your current location", "https://google.com/maps?q=XX.XXXXXX,-YY.YYYYYY"...]
+            [21]    Unknown, usually null
+            [22]    Unknown, usually null
+            [23]    Unknown, usually null
+            [24]    list, URL (or a part of URL) having a voice file (ex: ["https://myactivity.google.com/history/audio/play/148XXXXXXX156"])
+            [25]    list of list, description (ex: [["Started by hotword"]])
+            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+            [ 0]    Unknown, usually null
+            [ 1]    Unknown, usually null
+            [ 2]    list => if 1, a simple record without has 10 items
+            [ 3]    unknown, list, always [31]?
+            [ 4]    string, timestamp (ex: "1496631403214273")
+            [ 5]    unknown, string, unique id? (ex: "AODP23YAAAAfGh0IhgMSEwj6sY252qXUAhUGLyYKHRIkAtoYnuqfOgYjvglk9K9CU0DluxoRB3qb0CMD")
+            [ 6]    unknown, string, unique id? (ex: "AODP23YAAAATChEIhgMQnuqfOhj6sY252qXUAqHvEswFQ0bCU9LxnTqD6PmByanj")
+            [ 7]    list, triggered by "product name" (ex: ["Assistant", null, "https://..."])
+            [ 8]    Unknown, usually null
+            [ 9]    list, description (ex: ["Assistant", null, "Used"])
+            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+        date | time | timezone | MACB | source | sourcetype | type | user | host | short |
+        desc | version | filename | inode | notes | format | extra
+
+            (http://forensicswiki.org/wiki/L2T_CSV)
+            .date
+            .time
+            .timezone (UTC)
+            .MACB: Modified, Accessed, Changed (Entry Modified) and Birth (Created)
+            .source: from ACQUIRED_DATA.type
+            .sourcetype: from ACQUIRED_DATA.desc
+            .type: 'created' (B) or 'last updated' (M) or 'last local update' (C) or 'web-page accessed'
+            .user: -
+            .host: -
+            .short: triggered by "product name" (Started by hotword)
+            .desc: transcript (text transformed from user's voice)
+            .version: 2
+            .filename: source_id
+            .inode: -
+            .notes: answer of GA | associated with "com.google.homeautomation"
+            .format: JSPB (Protocol Buffers in JavaScript)
+            .extra: URL having a voice file
+"""

@@ -1,13 +1,19 @@
-# [Under Construction - expected until Mar 18, 2018]
+pycift
+================================
 
-# pycift
+> A Python implementation of **CIFT** (Cloud-based IoT Forensic Toolkit)
+> 
+> See [Description and version history](\pycift\__init__.py)
+>
+> CIFT wiki is under construction for providing more information
 
-A Python implementation of CIFT (Cloud-based IoT Forensic Toolkit)
-
+- - -
 
 ## Installation
 
 Tested Python versions: Python 3.5
+
+Tested Operating Systems: Windows 10 (Linux and macOS will be tested soon)
 
 Install the latest version:
 
@@ -15,14 +21,13 @@ Install the latest version:
 	$ cd pycift
 	$ python setup.py install
 
+- - -
 
-## Examples
+## Exampe 1. amazon_alexa.client.android_app
 
-### (1) amazon_alexa.client.android_app
+Amazon Alexa app-related data from smartphone images of DFRWS 2018 Challenge
 
-* Amazon Alexa app-related data from smartphone images of DFRWS 2018 Challenge
-
-#### Set user-inputs (Refer to [pycift_input_template.json](\example\pycift_input_template.json))
+#### Set user-inputs (cf. [pycift_input_template.json](\example\pycift_input_template.json))
 
 pycift_input_example_1.json
 
@@ -34,15 +39,15 @@ pycift_input_example_1.json
     "enabled": true,
     "client": {
       "android_app": [
-        "D:/artifacts/android/dfrws_challenge_2018/002-BettyNote2Black/com.amazon.dee.app/",
-        "D:/artifacts/android/dfrws_challenge_2018/003-SimonNote2White/com.amazon.dee.app/"
+        "D:/client_centric_artifacts/android/dfrws_challenge_2018/002-BettyNote2Black/com.amazon.dee.app/",
+        "D:/client_centric_artifacts/android/dfrws_challenge_2018/003-SimonNote2White/com.amazon.dee.app/"
       ]
     }
   }
 }
 ```
 
-#### Code snippets of (\example\pycift_simple_example.py)
+#### Code snippets of [pycift_simple_example.py](\example\pycift_simple_example.py)
 
 Import `pycift` modules:
 
@@ -53,43 +58,75 @@ from pycift.acquisition.amazon_alexa import AmazonAlexaInterface
 from pycift.acquisition.google_assistant import GoogleAssistantInterface 		
 ```
 
-Load user-inputs:
-
-    input_file = "pycift_input.json"
-    data = json.loads(open(input_file).read())
-
-Create an interface for processing each IVA ecosystem-related inputs:
-
-    cift = AmazonAlexaInterface()
-    # cift = GoogleAssistantInterface()  # for Google Assistant-related operations
+Create an interface for processing each IoT ecosystem-related inputs:
+```
+#!python
+cift = AmazonAlexaInterface()        # for Amazon Alexa-related operations
+# cift = GoogleAssistantInterface()  # for Google Assistant-related operations
+```
 
 Configure options:
 
-    cift.basic_config(
-        path_base_dir=base_dir,                   # Output path
-        browser_driver=CIFTBrowserDrive.CHROME,   # Browser driver
-        options=[CIFTOption.DOWNLOAD_VOICE_DATA]  # For downloading voice data from cloud side
-    )
+```
+#!python
+cift.basic_config(
+    path_base_dir=base_dir,                   # Output path
+    browser_driver=CIFTBrowserDrive.CHROME,   # Browser driver
+    options=[CIFTOption.DOWNLOAD_VOICE_DATA]  # For downloading voice data from cloud side
+)
+```
 
 Set user-inputs:
 
-    # Processing JSON-formatted user-inputs ("pycift_input.json")
-    # ...(skip)...
+```
+#!python
+# Processing JSON-formatted user-inputs ("pycift_input_example_1.json")
+# ...(skip)...
 
-    # Corpus creators can utilize add_input() to set each input as follows:
-    # ...(skip)...
+# Corpus creators can utilize add_input() to set each input as follows:
+cift.add_input(CIFTOperation.CLOUD, idpw.get("id"), idpw.get("pw"))
+cift.add_input(CIFTOperation.CLOUD, cookie)
+cift.add_input(CIFTOperation.COMPANION_APP_ANDROID, path)
+cift.add_input(CIFTOperation.COMPANION_APP_IOS, path)
+cift.add_input(CIFTOperation.COMPANION_BROWSER_CHROME, path)
+```
 
 Run `pycift` modules:
 
-    cift.run()
+```
+#!python
+cift.run()
+```
 
 #### Results
 
-The results were created on the log directory (\example\\(2018-XX-XX_YY.YY.YY)_CIFT_RESULT\\)
+The results were created on an output directory ([CIFT_RESULT](\example\\(EXAMPLE-1)_CIFT_RESULT_DC2018\\))
 
-* Evidence_Library
++ cift_amazon_alexa.db [257 KB]
+    * cf. [Alexa DB schema](\pycift\report\db_models_amazon_alexa.py) 
++ Evidence_Library:
+    * AmazonAlexaClient [0.99 MB]
+        1. 342 JSON files
+        2. 6 SQLite DB files
+        3. 2 event log files        
++ last_progress_log.txt [809 KB]
+    * Progress logs
 
+- - -
+
+## Exampe 2. amazon_alexa.cloud.credential_cookie
+
+Soon
+
+- - -
+
+## Exampe 3. google_assistant.cloud.credential_idpw
+
+Soon
+
+- - -
 
 ## License
 
 Apache License 2.0
+
