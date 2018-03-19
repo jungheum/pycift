@@ -5,7 +5,7 @@ pycift
 > 
 > See [Description and version history](https://bitbucket.org/cift/pycift/src/master/pycift/__init__.py?fileviewer=file-view-default)
 >
-> CIFT wiki is under construction for providing more information
+> [CIFT wiki](https://bitbucket.org/cift/pycift/wiki) is under construction for providing more information
 
 - - -
 
