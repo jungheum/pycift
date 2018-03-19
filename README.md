@@ -27,7 +27,7 @@ Install the latest version:
 
 Amazon Alexa app-related data from smartphone images of DFRWS 2018 Challenge
 
-#### Set user-inputs (cf. [pycift_input_template.json](\example\pycift_input_template.json))
+#### Set user-inputs (cf. [pycift_input_template.json](https://bitbucket.org/cift/pycift/src/master/example/pycift_input_template.json?fileviewer=file-view-default))
 
 pycift_input_example_1.json
 
@@ -47,7 +47,7 @@ pycift_input_example_1.json
 }
 ```
 
-#### Code snippets of [pycift_simple_example.py](\example\pycift_simple_example.py)
+#### Code snippets of [pycift_simple_example.py](https://bitbucket.org/cift/pycift/src/master/example/pycift_simple_example.py?fileviewer=file-view-default))
 
 Import `pycift` modules:
 
@@ -100,7 +100,7 @@ cift.run()
 
 #### Results
 
-The results were created on an output directory ([CIFT_RESULT](\example\\(EXAMPLE-1)_CIFT_RESULT_DC2018\\))
+The results were created on an output directory ([CIFT_RESULT](https://bitbucket.org/cift/pycift/src/master/example/(EXAMPLE-1)_CIFT_RESULT_DC2018/))
 
 + cift_amazon_alexa.db [257 KB]
     * cf. [Alexa DB schema](\pycift\report\db_models_amazon_alexa.py) 
