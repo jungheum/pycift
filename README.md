@@ -23,7 +23,7 @@ Install the latest version:
 
 - - -
 
-## Exampe 1. amazon_alexa.client.android_app
+## Example 1. amazon_alexa.client.android_app
 
 Amazon Alexa app-related data from smartphone images of DFRWS 2018 Challenge
 
@@ -114,15 +114,15 @@ The results were created on an output directory ([CIFT_RESULT](https://bitbucket
 
 - - -
 
-## Exampe 2. amazon_alexa.cloud.credential_cookie
+## Example 2. amazon_alexa.cloud.credential_cookie
 
-Soon
+To be added
 
 - - -
 
-## Exampe 3. google_assistant.cloud.credential_idpw
+## Example 3. google_assistant.cloud.credential_idpw
 
-Soon
+To be added
 
 - - -
 
