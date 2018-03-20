@@ -83,7 +83,7 @@ Set user-inputs:
 # Processing JSON-formatted user-inputs ("pycift_input_example_1.json")
 # ...(skip)...
 
-# Corpus creators can utilize add_input() to set each input as follows:
+# Users can utilize add_input() to set each input as follows:
 cift.add_input(CIFTOperation.CLOUD, idpw.get("id"), idpw.get("pw"))
 cift.add_input(CIFTOperation.CLOUD, cookie)
 cift.add_input(CIFTOperation.COMPANION_APP_ANDROID, path)
