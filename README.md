@@ -13,7 +13,7 @@ pycift
 
 Tested Python versions: Python 3.5
 
-Tested Operating Systems: Windows 10 (Linux and macOS will be tested soon)
+Tested Operating Systems: Windows 10, Ubuntu 16.04.4 (macOS will be tested soon)
 
 Install the latest version:
 
